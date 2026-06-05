@@ -313,6 +313,14 @@ if __name__ == "__main__":
 
     processed_df, pipeline = build_pipeline(df)
 
+    # Save processed dataset
+    processed_df.to_csv(
+        "../data/processed_data.csv",
+        index=False
+    )
+
+    print("Processed dataset saved!")
+
     print(processed_df.head())
 
     print(
