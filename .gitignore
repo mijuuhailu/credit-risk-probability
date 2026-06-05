@@ -1,2 +1,4 @@
 .venv
 data
+script/mlflow.db
+script/mlruns
