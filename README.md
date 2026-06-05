@@ -2,106 +2,167 @@
 
 ## Project Overview
 
-This project aims to develop an end-to-end Credit Risk Probability Model for Bati Bank using alternative transaction data from an eCommerce platform. The goal is to support a Buy-Now-Pay-Later (BNPL) service by estimating the likelihood that a customer represents a credit risk.
+This project develops an end-to-end Credit Risk Probability Model for Bati Bank using alternative transaction data from an eCommerce platform. The objective is to support a Buy-Now-Pay-Later (BNPL) service by estimating customer credit risk and identifying customers who may be eligible for credit products.
 
-Since the dataset does not contain a direct loan default indicator, a proxy target variable will be developed using customer behavioral patterns derived from Recency, Frequency, and Monetary (RFM) analysis.
+Since the dataset does not contain a direct loan default indicator, a proxy target variable is created using customer behavioral patterns based on Recency, Frequency, and Monetary (RFM) analysis.
 
-The final solution will include:
+---
 
-* Customer risk classification
-* Risk probability prediction
-* Credit score generation
-* Loan amount and duration recommendation
-* Model deployment as a REST API
-* Automated testing and CI/CD integration
+## Business Problem
+
+Bati Bank is partnering with an eCommerce platform to offer credit services to customers. Before granting credit, the bank needs a reliable method for assessing customer risk.
+
+The project aims to:
+
+* Identify high-risk and low-risk customers.
+* Estimate the probability of credit risk.
+* Generate a credit score from risk probabilities.
+* Support data-driven lending decisions.
+* Provide a deployable API for real-time credit risk prediction.
 
 ---
 
 ## Dataset Description
 
-The dataset contains transaction-level records collected from an eCommerce platform.
+The dataset contains transaction-level information from an eCommerce platform.
 
 ### Key Features
 
-| Feature              | Description                           |
-| -------------------- | ------------------------------------- |
-| TransactionId        | Unique transaction identifier         |
-| CustomerId           | Unique customer identifier            |
-| Amount               | Transaction amount                    |
-| Value                | Absolute value of transaction amount  |
-| ProductCategory      | Product category purchased            |
-| ChannelId            | Transaction channel                   |
-| ProviderId           | Service provider                      |
-| TransactionStartTime | Transaction timestamp                 |
-| FraudResult          | Fraud flag (1 = Fraud, 0 = Non-Fraud) |
+| Feature              | Description                   |
+| -------------------- | ----------------------------- |
+| TransactionId        | Unique transaction identifier |
+| CustomerId           | Unique customer identifier    |
+| Amount               | Transaction amount            |
+| ProductCategory      | Product category purchased    |
+| ChannelId            | Transaction channel           |
+| ProviderId           | Service provider              |
+| TransactionStartTime | Transaction timestamp         |
+| PricingStrategy      | Merchant pricing strategy     |
+| FraudResult          | Fraud indicator               |
 
 ---
 
-# Credit Scoring Business Understanding
+## Project Workflow
 
-## Basel II and Model Interpretability
+### 1. Business Understanding
 
-The Basel II Accord emphasizes accurate risk measurement, transparency, documentation, and ongoing monitoring of credit risk models. As a result, credit scoring models should be interpretable enough for business stakeholders, auditors, and regulators to understand how risk decisions are made.
+* Reviewed credit scoring concepts and Basel II requirements.
+* Analyzed the importance of model interpretability and documentation.
+* Evaluated the challenges of building a model without a direct default label.
 
-Well-documented and explainable models improve trust, support regulatory compliance, and facilitate model validation.
+### 2. Exploratory Data Analysis (EDA)
 
-## Why a Proxy Target Variable Is Needed
+Performed:
 
-The dataset does not contain a direct indicator of customer default behavior. Because supervised machine learning requires a target variable, a proxy measure of credit risk must be created.
-
-This project will use customer transaction behavior, specifically Recency, Frequency, and Monetary (RFM) metrics, to identify customers who may represent higher or lower credit risk.
-
-## Model Trade-Offs in a Regulated Environment
-
-Simple models such as Logistic Regression offer strong interpretability and are easier to explain to regulators. More advanced models such as Gradient Boosting may achieve better predictive performance but are generally less transparent.
-
-A key objective of this project is to balance predictive performance with explainability and regulatory requirements.
-
----
-
-# Exploratory Data Analysis (EDA)
-
-The dataset was explored to understand customer behavior, identify potential data quality issues, and guide future feature engineering.
-
-## EDA Activities Completed
-
-* Dataset structure inspection
-* Data type validation
+* Data structure inspection
 * Summary statistics analysis
-* Numerical feature distribution analysis
-* Categorical feature distribution analysis
+* Distribution analysis
 * Correlation analysis
 * Missing value assessment
 * Outlier detection
 * Customer activity analysis
-* Time-based transaction analysis
+* Transaction trend analysis
+
+#### Key Findings
+
+* Transaction amounts are highly skewed with several outliers.
+* Customer transaction activity varies significantly.
+* Transaction volumes show temporal patterns.
+* Behavioral features appear useful for risk prediction.
+
+### 3. Feature Engineering
+
+Implemented:
+
+* Customer-level aggregate features:
+
+  * Total Transaction Amount
+  * Average Transaction Amount
+  * Transaction Count
+  * Transaction Amount Standard Deviation
+
+* Time-based features:
+
+  * Transaction Hour
+  * Transaction Day
+  * Transaction Month
+  * Transaction Year
+
+* Missing value handling
+
+* One-hot encoding of categorical variables
+
+* Feature scaling using StandardScaler
+
+### 4. Proxy Target Variable Engineering
+
+Since no default label exists in the dataset:
+
+* Calculated Recency, Frequency, and Monetary (RFM) metrics.
+* Applied K-Means clustering to segment customers into behavioral groups.
+* Identified the least-engaged customer segment.
+* Created a binary target variable:
+
+```text
+is_high_risk = 1 → High-Risk Customer
+is_high_risk = 0 → Low-Risk Customer
+```
+
+### 5. Model Training and Experiment Tracking
+
+Trained and evaluated multiple machine learning models including:
+
+* Logistic Regression
+* Random Forest
+
+Implemented:
+
+* Train/Test Split
+* Hyperparameter Tuning
+* MLflow Experiment Tracking
+
+Evaluation metrics:
+
+* Accuracy
+* Precision
+* Recall
+* F1 Score
+* ROC-AUC
+
+The best-performing model was registered and prepared for deployment.
+
+### 6. Model Deployment
+
+Developed a REST API using FastAPI.
+
+Features:
+
+* Loads the trained model
+* Accepts customer feature inputs
+* Returns risk probability predictions
+
+Deployment tools:
+
+* FastAPI
+* Docker
+* Docker Compose
 
 ---
 
-## Key Insights
+## Technologies Used
 
-### 1. Transaction Amounts Are Highly Skewed
-
-Most transactions involve relatively small amounts, while a small number of transactions have extremely large values. This indicates a right-skewed distribution and the presence of significant outliers.
-
-### 2. Customer Activity Varies Significantly
-
-Most customers perform only a few transactions, while a small number of customers are highly active. This finding supports the use of transaction frequency as an important behavioral feature.
-
-### 3. Transaction Volume Changes Over Time
-
-Transaction activity increased substantially during December before declining in January and February, suggesting potential seasonal purchasing patterns.
-
-### 4. Large Transaction Outliers Exist
-
-Several transactions contain unusually high values. These observations may represent legitimate customer behavior and will be further evaluated during feature engineering.
-
-### 5. Behavioral Features May Be Strong Predictors
-
-The observed differences in customer activity and spending behavior suggest that RFM-based features could provide meaningful signals for proxy credit risk modeling.
+* Python
+* Pandas
+* NumPy
+* Scikit-Learn
+* MLflow
+* FastAPI
+* Docker
+* Pytest
+* GitHub Actions
 
 ---
 
-# Next Steps
+## Conclusion
 
-The next phase of the project will focus on constructing customer-level RFM metrics and creating a proxy target variable to represent credit risk. This target will be used to train and evaluate multiple machine learning models for risk prediction.
+This project demonstrates the development of an end-to-end credit risk prediction system using alternative transaction data. By combining customer behavioral analytics, machine learning, experiment tracking, API deployment, and CI/CD practices, the solution provides a practical framework for supporting credit decision-making in environments where traditional credit history is unavailable.

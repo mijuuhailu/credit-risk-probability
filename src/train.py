@@ -184,4 +184,11 @@ with mlflow.start_run(
 
 print(metrics)
 
+import joblib
+
+joblib.dump(
+    best_rf,
+    "best_model.pkl"
+)
+
 

@@ -1,0 +1,23 @@
+artifact_path: file:///C:/Users/mijuu/Documents/mijuuhailu/credit-risk-probability/script/mlruns/1/models/m-faf2d31b49c6447b89a837189115d9b5/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.3
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.9.0
+    skops_trusted_types: null
+mlflow_version: 3.13.0
+model_id: m-faf2d31b49c6447b89a837189115d9b5
+model_size_bytes: 1161605
+model_uuid: m-faf2d31b49c6447b89a837189115d9b5
+prompts: null
+run_id: c70fb95978f7452b8f384eb060276dad
+utc_time_created: '2026-06-05 17:41:12.273501'
